@@ -1,0 +1,45 @@
+# Site settings
+title: My Vue.js App
+description: A Vue.js application deployed with GitHub Pages and Jekyll
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+
+# GitHub Pages settings
+repository: username/repo-name # Replace with your GitHub username/repo
+
+# Build settings
+markdown: kramdown
+# Exclude Vue development files from Jekyll processing
+exclude:
+  - node_modules
+  - public
+  - src
+  - .gitignore
+  - package.json
+  - package-lock.json
+  - README.md
+  - vue.config.js
+  - babel.config.js
+  - pnpm-lock.yaml
+  - tsconfig.json
+
+# Include Vue build output
+include:
+  - dist
+
+# Custom Jekyll plugins (if needed)
+plugins:
+  - jekyll-seo-tag
+
+# Vue.js deployment settings
+# This ensures Vue router works with GitHub Pages
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
+# Create a .nojekyll file to bypass Jekyll processing on specific folders
+keep_files:
+  - .nojekyll
+  - CNAME
