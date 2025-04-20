@@ -68,6 +68,7 @@ jobs:
         with:
           # Upload dist folder
           path: "./dist"
+          name: "artifact-${{ github.run_id }}-deploy"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
