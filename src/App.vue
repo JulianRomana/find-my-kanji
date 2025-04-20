@@ -4,52 +4,68 @@ import { getAssistantResponse } from "./api/index";
 
 const searchQuery = ref("");
 const response = ref("");
+const isLoading = ref(false);
 
 async function handleSearch() {
   if (searchQuery.value.trim() === "") return;
 
   try {
+    isLoading.value = true;
     response.value = "Loading...";
     const result = await getAssistantResponse(searchQuery.value);
     response.value = result;
   } catch (error) {
     response.value = "An error occurred while fetching the response.";
     console.error(error);
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>
 
 <template>
-  <VApp>
-    <VAppBar app color="primary" dark>
+  <v-app>
+    <v-app-bar app color="primary" dark>
       <span class="title">Find My Kanji</span>
-    </VAppBar>
+    </v-app-bar>
 
-    <VMain>
-      <VContainer>
+    <v-main>
+      <v-container>
         <h1>Welcome to Find My Kanji</h1>
-        <p>Type a description of the Kanji and press Enter to search.</p>
+        <p>
+          Type a description of the Kanji and press Enter or click the button to
+          search.
+        </p>
 
-        <VTextField
+        <v-text-field
           v-model="searchQuery"
           label="Search for a Kanji"
           outlined
           @keyup.enter="handleSearch"
-        ></VTextField>
+        ></v-text-field>
 
-        <div v-if="response" class="response">
+        <v-btn
+          color="primary"
+          class="mt-3"
+          @click="handleSearch"
+          :loading="isLoading"
+        >
+          Search
+        </v-btn>
+
+        <div v-if="isLoading || response" class="response">
           <h2>Response:</h2>
           <p>{{ response }}</p>
         </div>
-      </VContainer>
-    </VMain>
+      </v-container>
+    </v-main>
 
-    <VFooter app color="primary" dark>
-      <VContainer>
+    <v-footer app color="primary" dark>
+      <v-container>
         <span>&copy; 2025 Find My Kanji</span>
-      </VContainer>
-    </VFooter>
-  </VApp>
+      </v-container>
+    </v-footer>
+  </v-app>
 </template>
 
 <style scoped>
