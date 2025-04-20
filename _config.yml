@@ -1,45 +1,50 @@
 # Site settings
 title: My Vue.js App
 description: A Vue.js application deployed with GitHub Pages and Jekyll
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+name: Deploy static content to Pages
 
-# GitHub Pages settings
-repository: username/repo-name # Replace with your GitHub username/repo
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["dev"]
 
-# Build settings
-markdown: kramdown
-# Exclude Vue development files from Jekyll processing
-exclude:
-  - node_modules
-  - public
-  - src
-  - .gitignore
-  - package.json
-  - package-lock.json
-  - README.md
-  - vue.config.js
-  - babel.config.js
-  - pnpm-lock.yaml
-  - tsconfig.json
+  workflow_dispatch:
 
-# Include Vue build output
-include:
-  - dist
+# Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
-# Custom Jekyll plugins (if needed)
-plugins:
-  - jekyll-seo-tag
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
-# Vue.js deployment settings
-# This ensures Vue router works with GitHub Pages
-defaults:
-  - scope:
-      path: ""
-    values:
-      layout: "default"
-
-# Create a .nojekyll file to bypass Jekyll processing on specific folders
-keep_files:
-  - .nojekyll
-  - CNAME
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload dist folder
+          path: "./dist"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
